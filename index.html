@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zap Zap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(11, 20, 26, 0.2); border-radius: 3px; }
+    .chat-bg-pattern {
+      background-color: #efeae2;
+      background-image: radial-gradient(#d1d7db 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+  </style>
+</head>
+<body class="bg-[#d1d7db] font-sans h-screen w-screen overflow-hidden flex items-center justify-center antialiased select-none">
+  
+  <div class="fixed top-0 left-0 w-full h-32 bg-[#00a884] -z-10"></div>
+
+  <!-- TELA DE AUTENTICAÇÃO E REGISTRO -->
+  <div id="loginScreen" class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 transform transition-all duration-300 mx-4 border border-gray-100">
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 bg-[#00a884] rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-emerald-600/20">
+        <i class="fa-brands fa-whatsapp text-white text-3xl"></i>
+      </div>
+      <h2 class="text-2xl font-bold text-[#111b21] tracking-tight">Zap Zap</h2>
+      <p class="text-sm text-[#667781] mt-1" id="loginSubTitle">Conecte-se para conversar com seus contatos</p>
+    </div>
+
+    <!-- PASSO 1: TELEFONE DE LOGIN -->
+    <div id="stepPhone" class="block">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-semibold text-[#00a884] uppercase tracking-wider">Passo 1 de 2</span>
+        <span class="text-xs text-gray-400">Identificação</span>
+      </div>
+      <div class="mb-5">
+        <label for="telefone" class="block text-xs font-medium text-[#111b21] uppercase mb-1.5 tracking-wide">Número de Telefone</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#667781]">
+            <i class="fa-solid fa-phone text-sm"></i>
+          </span>
+          <input type="text" id="telefone" placeholder="Ex: 19800000010" autofocus 
+            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl outline-none focus:border-[#00a884] focus:ring-2 focus:ring-[#00a884]/20 text-gray-800 text-sm transition-all duration-200">
+        </div>
+        <p id="phoneError" class="text-xs text-red-500 mt-1.5 hidden">Por favor, digite um número de telefone.</p>
+      </div>
+      <button type="button" id="btnAvancar" onclick="avancarParaSenha()" class="w-full py-3.5 bg-[#00a884] hover:bg-[#008f6f] text-white font-semibold rounded-xl shadow-md transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.99]">
+        <span>Avançar</span>
+        <i class="fa-solid fa-arrow-right text-xs"></i>
+      </button>
+
+      <div class="mt-4 text-center">
+        <button type="button" onclick="exibirTelaCadastro()" class="text-xs font-semibold text-[#00a884] hover:underline">
+          Não tem uma conta? Cadastre-se
+        </button>
+      </div>
+    </div>
+
+    <!-- PASSO 2: SENHA DE LOGIN -->
+    <div id="stepPassword" class="hidden">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-semibold text-[#00a884] uppercase tracking-wider">Passo 2 de 2</span>
+        <span class="text-xs text-gray-400">Autenticação</span>
+      </div>
+      
+      <div class="flex items-center justify-between bg-[#f0f2f5] p-3 rounded-xl mb-5 border border-gray-200/60">
+        <div class="flex items-center gap-2.5 overflow-hidden">
+          <div class="w-8 h-8 rounded-full bg-[#00a884]/10 text-[#00a884] flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-mobile-screen-button text-xs"></i>
+          </div>
+          <div class="truncate">
+            <p class="text-[10px] text-gray-400 uppercase font-semibold">Conectando como</p>
+            <span id="displayPhone" class="text-sm font-bold text-[#111b21] truncate block"></span>
+          </div>
+        </div>
+        <button type="button" onclick="voltarParaTelefone()" class="text-xs text-[#00a884] hover:bg-emerald-50 px-2.5 py-1 rounded-lg font-semibold transition-all shrink-0">Alterar</button>
+      </div>
+      
+      <form id="formAuth" onsubmit="realizarLogin(event)">
+        <div class="mb-5">
+          <label for="senha" class="block text-xs font-medium text-[#111b21] uppercase mb-1.5 tracking-wide">Senha de Acesso</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#667781]">
+              <i class="fa-solid fa-lock text-sm"></i>
+            </span>
+            <input type="password" id="senha" placeholder="Digite sua senha" required 
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl outline-none focus:border-[#00a884] focus:ring-2 focus:ring-[#00a884]/20 text-sm transition-all duration-200">
+          </div>
+        </div>
+        <button type="submit" class="w-full py-3.5 bg-[#00a884] hover:bg-[#008f6f] text-white font-semibold rounded-xl shadow-md transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.99]">
+          <span>Entrar</span>
+          <i class="fa-solid fa-right-to-bracket text-xs"></i>
+        </button>
+        <div id="errorMsg" class="hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs text-center font-medium">
+          Telefone ou senha incorretos!
+        </div>
+      </form>
+    </div>
+
+    <!-- TELA DE CADASTRO ( NOVO ) -->
+    <div id="stepRegister" class="hidden">
+      <form id="formRegister" onsubmit="cadastrarUsuario(event)">
+        <div class="mb-4">
+          <label for="regTelefone" class="block text-xs font-medium text-[#111b21] uppercase mb-1 tracking-wide">Telefone</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#667781]">
+              <i class="fa-solid fa-phone text-sm"></i>
+            </span>
+            <input type="text" id="regTelefone" placeholder="Ex: 19800000010" required
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl outline-none focus:border-[#00a884] focus:ring-2 focus:ring-[#00a884]/20 text-sm">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="regNome" class="block text-xs font-medium text-[#111b21] uppercase mb-1 tracking-wide">Nome / Apelido</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#667781]">
+              <i class="fa-solid fa-user text-sm"></i>
+            </span>
+            <input type="text" id="regNome" placeholder="Ex: Maria" required
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl outline-none focus:border-[#00a884] focus:ring-2 focus:ring-[#00a884]/20 text-sm">
+          </div>
+        </div>
+
+        <div class="mb-5">
+          <label for="regSenha" class="block text-xs font-medium text-[#111b21] uppercase mb-1 tracking-wide">Senha</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#667781]">
+              <i class="fa-solid fa-lock text-sm"></i>
+            </span>
+            <input type="password" id="regSenha" placeholder="Crie uma senha" required
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl outline-none focus:border-[#00a884] focus:ring-2 focus:ring-[#00a884]/20 text-sm">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-[#00a884] hover:bg-[#008f6f] text-white font-semibold rounded-xl shadow-md transition-all duration-200 flex items-center justify-center gap-2 mb-3">
+          <span>Cadastrar</span>
+          <i class="fa-solid fa-user-plus text-xs"></i>
+        </button>
+
+        <div class="text-center">
+          <button type="button" onclick="voltarParaLogin()" class="text-xs text-gray-500 hover:text-gray-700">
+            Voltar para o Login
+          </button>
+        </div>
+
+        <div id="regErrorMsg" class="hidden mt-3 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs text-center"></div>
+      </form>
+    </div>
+
+  </div>
+  <div id="appScreen" class="hidden w-[98vw] md:w-[95vw] h-[95vh] max-w-[1600px] bg-white rounded-2xl shadow-2xl overflow-hidden flex-row border border-gray-200">
+    <div class="w-full md:w-[380px] bg-white border-r border-[#e9edef] flex flex-col h-full shrink-0">
+      <div class="h-[60px] bg-[#f0f2f5] px-4 flex items-center justify-between border-b border-[#e9edef] shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-[#00a884] text-white flex items-center justify-center font-bold text-base" id="userAvatar">U</div>
+          <div class="truncate">
+            <p id="userNameDisplay" class="text-sm font-semibold text-[#111b21] truncate"></p>
+            <p id="userPhoneDisplay" class="text-[11px] text-[#667781] truncate"></p>
+          </div>
+        </div>
+        <button onclick="location.reload()" title="Sair" class="text-red-500 hover:text-red-700 p-2"><i class="fa-solid fa-right-from-bracket"></i></button>
+      </div>
+      <div class="flex-1 overflow-y-auto" id="contactList"></div>
+    </div>
+    <div class="flex-1 flex flex-col h-full bg-[#efeae2] chat-bg-pattern relative">
+      <div class="h-[60px] bg-[#f0f2f5] px-4 flex items-center justify-between border-b border-[#e9edef] shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-[#53bdeb] text-white flex items-center justify-center font-bold text-base" id="chatAvatar">?</div>
+          <div>
+            <h3 class="text-sm font-semibold text-[#111b21]" id="chatName">Selecione uma conversa</h3>
+            <p class="text-[11px] text-[#667781]" id="chatStatus">Clique em um contato ao lado</p>
+          </div>
+        </div>
+      </div>
+      <div id="noChatSelected" class="absolute inset-0 bg-[#f0f2f5] z-20 flex flex-col items-center justify-center text-center p-8">
+        <i class="fa-brands fa-whatsapp text-6xl text-[#00a884] mb-3"></i>
+        <h2 class="text-2xl font-light text-[#41525d]">zap zap Web</h2>
+        <p class="text-sm text-[#667781] mt-1">Selecione um contato na barra lateral para começar.</p>
+      </div>
+      <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-3" id="messagesArea"></div>
+      <form id="formChat" onsubmit="enviarMensagem(event)" class="h-[62px] bg-[#f0f2f5] px-4 flex items-center gap-3 border-t border-[#e9edef] shrink-0">
+        <input type="text" id="messageInput" autocomplete="off" placeholder="Digite uma mensagem" class="flex-1 bg-white py-2.5 px-4 rounded-xl outline-none text-sm text-[#111b21] border border-gray-200">
+        <button type="submit" class="w-10 h-10 bg-[#00a884] hover:bg-[#008f6f] text-white rounded-full flex items-center justify-center shadow">
+          <i class="fa-solid fa-paper-plane text-sm"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let usuarioLogado = null;
+    let contatoAtivo = null;
+
+    document.getElementById('telefone').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        avancarParaSenha();
+      }
+    });
+
+    function avancarParaSenha() {
+      const phoneInput = document.getElementById('telefone').value.trim();
+      const phoneError = document.getElementById('phoneError');
+      if (phoneInput === '') {
+        phoneError.classList.remove('hidden');
+        return;
+      }
+      phoneError.classList.add('hidden');
+      document.getElementById('displayPhone').innerText = phoneInput;
+      document.getElementById('stepPhone').classList.add('hidden');
+      document.getElementById('stepPassword').classList.remove('hidden');
+      
+      setTimeout(() => {
+        document.getElementById('senha').focus();
+      }, 100);
+    }
+
+    function voltarParaTelefone() {
+      document.getElementById('stepPassword').classList.add('hidden');
+      document.getElementById('stepPhone').classList.remove('hidden');
+      document.getElementById('errorMsg').classList.add('hidden');
+      document.getElementById('telefone').focus();
+    }
+
+    function exibirTelaCadastro() {
+      document.getElementById('stepPhone').classList.add('hidden');
+      document.getElementById('stepPassword').classList.add('hidden');
+      document.getElementById('stepRegister').classList.remove('hidden');
+      document.getElementById('loginSubTitle').innerText = 'Crie sua conta para utilizar a plataforma';
+    }
+
+    function voltarParaLogin() {
+      document.getElementById('stepRegister').classList.add('hidden');
+      document.getElementById('stepPhone').classList.remove('hidden');
+      document.getElementById('loginSubTitle').innerText = 'Conecte-se para conversar com seus contatos';
+    }
+    async function cadastrarUsuario(event) {
+      event.preventDefault();
+      const telefone = document.getElementById('regTelefone').value.trim();
+      const apelido = document.getElementById('regNome').value.trim();
+      const senha = document.getElementById('regSenha').value.trim();
+      const regErrorMsg = document.getElementById('regErrorMsg');
+      
+      regErrorMsg.classList.add('hidden');
+
+      try {
+        const res = await fetch('http://localhost:3000/signin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telefone, apelido, senha })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          alert('Conta criada com sucesso!');
+          document.getElementById('telefone').value = telefone;
+          voltarParaLogin();
+        } else {
+          regErrorMsg.innerText = data.message || 'Erro ao realizar o cadastro.';
+          regErrorMsg.classList.remove('hidden');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao conectar com o servidor Node.js em http://localhost:3000');
+      }
+    }
+
+    async function realizarLogin(event) {
+      event.preventDefault();
+      const telefone = document.getElementById('telefone').value.trim();
+      const senha = document.getElementById('senha').value.trim();
+      const errorMsg = document.getElementById('errorMsg');
+      errorMsg.classList.add('hidden');
+      try {
+        const res = await fetch(`http://localhost:3000/auth?telefone=${encodeURIComponent(telefone)}&senha=${encodeURIComponent(senha)}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.isAuth) {
+          usuarioLogado = data.user;
+          document.getElementById('loginScreen').classList.add('hidden');
+          document.getElementById('appScreen').classList.remove('hidden');
+          document.getElementById('appScreen').classList.add('flex');
+          
+          document.getElementById('userNameDisplay').innerText = usuarioLogado.apelido;
+          document.getElementById('userPhoneDisplay').innerText = usuarioLogado.telefone;
+          document.getElementById('userAvatar').innerText = usuarioLogado.apelido.charAt(0).toUpperCase();
+          carregarContatos();
+        } else {
+          errorMsg.classList.remove('hidden');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao conectar com o servidor Node.js em http://localhost:3000');
+      }
+    }
+
+    async function carregarContatos() {
+      try {
+        const res = await fetch(`http://localhost:3000/utilizadores?meuTelefone=${usuarioLogado.telefone}`);
+        const contatos = await res.json();
+        const contactList = document.getElementById('contactList');
+        contactList.innerHTML = '';
+        contatos.forEach(c => {
+          const div = document.createElement('div');
+          div.className = 'flex items-center px-4 py-3.5 cursor-pointer hover:bg-[#f5f6f6] border-b border-gray-100';
+          div.onclick = () => selecionarContato(c);
+          div.innerHTML = `
+            <div class="w-10 h-10 rounded-full bg-[#53bdeb] text-white flex items-center justify-center font-bold text-base mr-3.5 shrink-0">
+              ${c.apelido.charAt(0).toUpperCase()}
+            </div>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-sm font-semibold text-[#111b21] truncate">${c.apelido}</h4>
+              <p class="text-xs text-[#667781] truncate">${c.telefone}</p>
+            </div>
+          `;
+          contactList.appendChild(div);
+        });
+      } catch (err) {
+        console.error('Erro ao carregar contatos:', err);
+      }
+    }
+
+    function selecionarContato(contato) {
+      contatoAtivo = contato;
+      document.getElementById('noChatSelected').classList.add('hidden');
+      document.getElementById('chatName').innerText = contato.apelido;
+      document.getElementById('chatStatus').innerText = contato.telefone;
+      document.getElementById('chatAvatar').innerText = contato.apelido.charAt(0).toUpperCase();
+      carregarMensagens();
+    }
+
+    async function carregarMensagens() {
+      if (!contatoAtivo || !usuarioLogado) return;
+      try {
+        const res = await fetch(`http://localhost:3000/mensagens?remetente=${usuarioLogado.telefone}&destino=${contatoAtivo.telefone}`);
+        const mensagens = await res.json();
+        const area = document.getElementById('messagesArea');
+        area.innerHTML = '';
+        mensagens.forEach(m => {
+          const souEu = m.remetente === usuarioLogado.telefone;
+          const msgDiv = document.createElement('div');
+          msgDiv.className = `max-w-[70%] p-3 rounded-xl text-sm shadow-sm ${
+            souEu ? 'bg-[#d9fdd3] self-end rounded-tr-none' : 'bg-white self-start rounded-tl-none'
+          }`;
+          msgDiv.innerText = m.mensagem;
+          area.appendChild(msgDiv);
+        });
+        area.scrollTop = area.scrollHeight;
+      } catch (err) {
+        console.error('Erro ao carregar mensagens:', err);
+      }
+    }
+
+    async function enviarMensagem(e) {
+      e.preventDefault();
+      const input = document.getElementById('messageInput');
+      const texto = input.value.trim();
+      if (!texto || !contatoAtivo) return;
+      try {
+        await fetch('http://localhost:3000/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            telefone: usuarioLogado.telefone,
+            destino: contatoAtivo.telefone,
+            mensagem: texto
+          })
+        });
+        input.value = '';
+        carregarMensagens();
+      } catch (err) {
+        console.error('Erro ao enviar mensagem:', err);
+      }
+    }
+  </script>
+</body>
+</html>
