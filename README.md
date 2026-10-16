@@ -2,11 +2,11 @@
 ---
 
 ### . Opção se cadasatrar
-<img width="466" height="565" alt="image" src="https://github.com/user-attachments/assets/8d632346-625e-493b-a329-64948484f2b7" />
+<img width="467" height="453" alt="image" src="https://github.com/user-attachments/assets/b4ac2b7a-eaab-4902-a199-e84b5e246e19" />
 
 
 ### . Interface cadastro novo
-<img width="586" height="656" alt="image" src="https://github.com/user-attachments/assets/f72cb7c2-4dff-4ef8-b120-1e2683fbf3fc" />
+<img width="466" height="565" alt="image" src="https://github.com/user-attachments/assets/8d632346-625e-493b-a329-64948484f2b7" />
 
 ### . preenchimento
 <img width="444" height="531" alt="image" src="https://github.com/user-attachments/assets/52f47f52-ddd3-41c3-808b-bde9b15d4e7c" />
